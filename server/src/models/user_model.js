@@ -10,15 +10,7 @@ const userSchema = new Schema({
     type: String,
     required: true,
   },
-  tags: {
-    type: [String],
-    default: [],
-  },
 
-  coverUrl: {
-    type: String,
-    required: true,
-  },
 
   id: String,
 });
