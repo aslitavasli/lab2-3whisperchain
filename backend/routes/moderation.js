@@ -12,29 +12,31 @@ router.get('/flagged', verifyToken, async (req, res) => {
 
 router.post('/report', verifyToken, async (req, res) => {
   const {
-    message: encryptedMessage, 
-    id, 
-    sender, 
+    message: encryptedMessage,
+    id,
+    sender,
     modID,
   } = req.body;
   console.log('id is', id);
   try {
     // Find the specific moderator by ID
     const moderator = await User.findById(modID);
- 
+
     if (!moderator || !moderator.isModerator) {
       return res.status(231).json({ error: 'Moderator not found or not valid.' });
     }
 
-    // 3. Create a new message for the moderator's inbox
+    // 3. Create a new message for the moderator's inbox we are using the flagged as to mean reviewed
     const reportMessage = new Message({
       sender,
       encryptedMessage,
+      flagged: false,
     });
     await reportMessage.save();
 
+    console.log('report message', reportMessage);
     // 4. Add this new message to moderator's `messages`
-    moderator.messages.push(reportMessage._id);
+    moderator.messages.push(reportMessage);
     await moderator.save();
 
     // Mark the og message as flagged

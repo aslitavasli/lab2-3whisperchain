@@ -13,10 +13,11 @@ function App() {
         <Route path='/' element={<LandingPage />} />
         <Route path='/login' element={<Login />} />
         <Route path='/register' element={<Register />} />
+        <Route path='/dashboard' element={<Dashboard />} />
         {/* How we'll secure/render different dashboards based on different users/roles */}
-        <Route element={<ProtectedRoute />}>
-          <Route path='/dashboard' element={<Dashboard />} />
-        </Route>
+        {/* <Route element={<ProtectedRoute />}>
+          <Route path='/dashboard' element={<Dashboard />} /> 
+        </Route>*/}
       </Routes>
   );
 }

@@ -61,10 +61,18 @@ router.get('/inbox/:recipientId', verifyToken, async (req, res) => {
   res.json(user.messages);
 });
 
-router.post('/flag/:id', verifyToken, requireRole('recipient'), async (req, res) => {
+router.post('/flag/:id', verifyToken, async (req, res) => {
   await Message.findByIdAndUpdate(req.params.id, { flagged: true });
-  await Log.create({ action: 'flag_message', role: req.user.role });
+  // await Log.create({ action: 'flag_message', role: req.user.role });
   res.json({ message: 'Message flagged' });
+});
+
+// if a moderator decides that the message is ok, just change the message's boolean as flagged=true
+// (means reviewed=true in moderator's context)
+router.post('/change_review_status/:id', verifyToken, async (req, res) => {
+  await Message.findByIdAndUpdate(req.params.id, { flagged: true });
+  console.log('updated');
+  res.json({ message: 'Message reviewed' });
 });
 
 module.exports = router;

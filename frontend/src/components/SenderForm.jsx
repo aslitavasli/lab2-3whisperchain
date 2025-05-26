@@ -77,7 +77,7 @@ function SenderForm() {
 
   return (
     <form onSubmit={handleSend}>
-      <h3>Hello, {username}! </h3>
+      {/* <h3>Hello, {username}! </h3> */}
       <h3> Send Encrypted Message</h3>
       <select value={recipientUsername} onChange={(e) => setRecipientUsername(e.target.value)}>
         <option value="">Select Recipient</option>
