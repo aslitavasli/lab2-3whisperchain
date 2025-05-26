@@ -156,7 +156,7 @@ const handleDontBan = async(msg)=>{
  
     //change the message's flag from the backend (make it true)
     try {
-     const res = await axios.post(`http://localhost:9090/messages/change-review-status/${msg.msg.id}`, {
+     const res = await axios.post(`http://localhost:9090/api/messages/change-review-status/${msg.msg.id}`, {
     }, {
       headers: { Authorization: 'Bearer ' + localStorage.getItem('token') }
     });
@@ -165,7 +165,7 @@ const handleDontBan = async(msg)=>{
 console.log(error)
     }
     //on the frontend, move the message to the 'reviewed messages' section
-
+    
 }
 
   const inboxMessages = messages.filter((msg) => !msg.flagged);
@@ -184,7 +184,7 @@ console.log(error)
         <> 
     
           {inboxMessages.length > 0 && (
-  <>
+        <>
     <h3>Messages to Review</h3>
     {inboxMessages.map((msg) => (
       <div key={msg.id} style={{ border: '1px solid #f99', borderRadius: '10px', padding: '15px', marginBottom: '15px', backgroundColor: '#fee', position: 'relative' }}>
@@ -225,8 +225,12 @@ console.log(error)
       
 
     ))}
+  </>
+)}
 
-     {flaggedMessages.length > 0 && (
+        </>
+      )}
+        {flaggedMessages.length > 0 && (
   <>
     <h3>Reviewed Messages</h3>
     {flaggedMessages.map((msg) => (
@@ -237,11 +241,6 @@ console.log(error)
     ))}
   </>
 )}
-  </>
-)}
-
-        </>
-      )}
     </div>
   );
 }

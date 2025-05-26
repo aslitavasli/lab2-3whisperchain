@@ -5,6 +5,7 @@ import Login from './components/Login';
 import Dashboard from './components/Dashboard';
 import LandingPage from './components/LandingPage';
 import { ProtectedRoute } from './components/ProtectedRoutes';
+import AdminDash from './components/AdminDash';
 
 
 function App() {
@@ -18,6 +19,8 @@ function App() {
         {/* <Route element={<ProtectedRoute />}>
           <Route path='/dashboard' element={<Dashboard />} /> 
         </Route>*/}
+        <Route path='/AdminDash' element={<AdminDash />} />
+
       </Routes>
   );
 }

@@ -69,7 +69,7 @@ router.post('/flag/:id', verifyToken, async (req, res) => {
 
 // if a moderator decides that the message is ok, just change the message's boolean as flagged=true
 // (means reviewed=true in moderator's context)
-router.post('/change_review_status/:id', verifyToken, async (req, res) => {
+router.post('/change-review-status/:id', verifyToken, async (req, res) => {
   await Message.findByIdAndUpdate(req.params.id, { flagged: true });
   console.log('updated');
   res.json({ message: 'Message reviewed' });
