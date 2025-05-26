@@ -57,7 +57,7 @@ router.get('/inbox/:recipientId', verifyToken, async (req, res) => {
     .populate({ path: 'messages' });
 
   if (!user) return res.status(404).json({ message: 'User not found' });
-
+  console.log(user.messages);
   res.json(user.messages);
 });
 

@@ -9,6 +9,7 @@ function ModeratorPanel() {
   const [modKey, setModKey] = useState(null);
   const [modID, setmodID] = useState(null)
   const [token, setToken] = useState(null)
+  
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) return;
@@ -70,12 +71,17 @@ function ModeratorPanel() {
 
 
   const sendToAdmin = async (sender, flaggedmsg) => {
-
+      console.log(sender)
   try {
-     const res = await axios.post(`http://localhost:9090/api/admin/ban/${sender}`, {
-      headers: { Authorization: 'Bearer ' + localStorage.getItem('token') }
-    });
-    alert('Message sent to admin.');
+      const res = await axios.post(
+      `http://localhost:9090/api/admin/ban/${sender}`,
+      {}, 
+      {
+        headers: { Authorization: 'Bearer ' + localStorage.getItem('token') }
+      }
+    );
+
+    alert('Ban request made to the admin.');
     console.log(res.data);
     
       //on the frontend, move the message to the 'reviewed messages' section
@@ -90,15 +96,18 @@ function ModeratorPanel() {
   }
 };
 
-const handleBan = async (sender) => {
+const handleBan = async (sender, flaggedmsg) => {
   try {
     console.log('tryna ban person w id', sender)
   
-    await sendToAdmin(sender);
+    await sendToAdmin(sender, flaggedmsg);
 
   } catch (err) {
-    console.error('Failed to encrypt flagged message:', err);
+    console.error(err);
+    alert("Something went wrong, please try again!")
   }
+  //update the frontend and change review message to reviewed
+  handleDontBan(flaggedmsg)
 };
 
 const handleDontBan = async(flaggedmsg)=>{
@@ -155,7 +164,7 @@ console.log(error)
               cursor: 'pointer',
               fontWeight: 'bold',
             }}
-            onClick={()=> handleBan(msg.sender)}
+            onClick={()=> handleBan(msg.sender, msg)}
           >
             🚫 Ban
           </button>

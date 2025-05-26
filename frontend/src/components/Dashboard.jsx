@@ -3,6 +3,8 @@ import SenderForm from './SenderForm';
 import RecipientInbox from './RecipientInbox';
 import LogoutButton from './LogoutButton';
 import ModeratorPanel from './ModeratorPanel';
+import AdminDash from './AdminDash'; 
+import AdminPanel from './AdminPanel';
 
 function Dashboard() {
   const [userInfo, setUserInfo] = useState({});
@@ -20,25 +22,32 @@ function Dashboard() {
     }
   }, []);
 
-
-
   return (
     <div>
       <h2>Dashboard</h2>
-    
-      <div>
-        <LogoutButton />
-      </div>
-      {userInfo.isModerator && <>
-        <h3>Welcome, {userInfo.username || 'user'}. Please review all current flagged messages.</h3>
-        <ModeratorPanel/> </>}
+      <LogoutButton />
 
-      {!userInfo.isModerator &&
-      <>
-      <SenderForm />
-      <RecipientInbox /> 
-      </>}  
+      {userInfo.isAdmin && (
+        <>
+          <h3>Welcome, Admin {userInfo.username}</h3>
+          <AdminPanel/>
+          <AdminDash />
+        </>
+      )}
 
+      {userInfo.isModerator && !userInfo.isAdmin && (
+        <>
+          <h3>Welcome, {userInfo.username}. Please review all current flagged messages.</h3>
+          <ModeratorPanel />
+        </>
+      )}
+
+      {!userInfo.isModerator && !userInfo.isAdmin && (
+        <>
+          <SenderForm />
+          <RecipientInbox />
+        </>
+      )}
     </div>
   );
 }

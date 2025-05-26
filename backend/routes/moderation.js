@@ -19,6 +19,7 @@ router.post('/report', verifyToken, async (req, res) => {
   } = req.body;
   console.log('id is', id);
   try {
+    console.log('moderating', id);
     // Find the specific moderator by ID
     const moderator = await User.findById(modID);
 
@@ -40,17 +41,15 @@ router.post('/report', verifyToken, async (req, res) => {
     await moderator.save();
 
     // Mark the og message as flagged
-    const updatedMessage = await Message.findByIdAndUpdate(
-      id,
-      { flagged: true },
-      { new: true },
-    );
-
-    if (!updatedMessage) {
+    const msgToUpdate = await Message.findById(id);
+    if (!msgToUpdate) {
       return res.status(404).json({ error: 'Original message not found.' });
     }
+    msgToUpdate.flagged = true;
+    await msgToUpdate.save();
 
-    res.json({ success: true, moderatorId: moderator._id, flaggedMessage: updatedMessage });
+    console.log('updated', msgToUpdate);
+    res.json({ success: true, moderatorId: moderator._id, flaggedMessage: msgToUpdate });
   } catch (err) {
     console.error('Error reporting message:', err);
     res.status(500).json({ error: 'Server error while reporting message.' });
