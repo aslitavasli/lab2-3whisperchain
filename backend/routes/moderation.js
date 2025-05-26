@@ -12,14 +12,18 @@ router.get('/flagged', verifyToken, async (req, res) => {
 
 router.post('/report', verifyToken, async (req, res) => {
   const {
-    message: encryptedMessage, id, sender, modID,
+    message: encryptedMessage, 
+    id, 
+    sender, 
+    modID,
   } = req.body;
   console.log('id is', id);
   try {
     // Find the specific moderator by ID
     const moderator = await User.findById(modID);
+ 
     if (!moderator || !moderator.isModerator) {
-      return res.status(404).json({ error: 'Moderator not found or not valid.' });
+      return res.status(231).json({ error: 'Moderator not found or not valid.' });
     }
 
     // 3. Create a new message for the moderator's inbox
