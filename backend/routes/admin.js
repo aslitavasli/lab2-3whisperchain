@@ -111,6 +111,16 @@ router.put('/user/role/:id', async (req, res) => {
       return res.status(404).json({ error: 'User not found.' });
     }
 
+    // Step 2: Delete all associated messages
+    const messageIds = user.messages.map((msg) => msg._id);
+    if (messageIds.length > 0) {
+      await Message.deleteMany({ _id: { $in: messageIds } });
+    }
+
+    // Step 3: Clear the user's messages array
+    user.messages = [];
+    await user.save();
+
     res.status(200).json({ message: 'User role updated successfully.', user });
   } catch (err) {
     res.status(500).json({ error: 'Server error.', details: err.message });
