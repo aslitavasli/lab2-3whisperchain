@@ -5,20 +5,20 @@ function AdminDash() {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+//   useEffect(() => {
     // Fetch messages received by the moderator
-    axios.get('http://localhost:9090/api/messages/received', {
-      headers: { Authorization: 'Bearer ' + localStorage.getItem('token') }
-    })
-      .then(res => {
-        setMessages(res.data);
-        setLoading(false);
-      })
-      .catch(err => {
-        alert('Failed to fetch messages.');
-        setLoading(false);
-      });
-  }, []);
+//     axios.get('http://localhost:5173/api/messages/received', {
+//       headers: { Authorization: 'Admin? ' + localStorage.getItem('token') }
+//     })
+//       .then(res => {
+//         setMessages(res.data);
+//         setLoading(false);
+//       })
+//       .catch(err => {
+//         alert('Failed to fetch messages.');
+//         setLoading(false);
+//       });
+//   }, []);
 
   return (
     <div style={{

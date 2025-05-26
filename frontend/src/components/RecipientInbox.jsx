@@ -43,6 +43,7 @@ function RecipientInbox() {
       }
     });
     setmodID(response.data.id)
+    console.log('mod id is', response.data.id)
     return response.data.publicKey;
   } catch (error) {
     if (error.response) {
@@ -145,8 +146,13 @@ const handleFlag = async (flaggedMsg) => {
     const encryptedBase64 = btoa(String.fromCharCode(...new Uint8Array(encrypted)));
 
     // 6. Send `encryptedBase64` to your moderator endpoint…
-    await sendToModerator({message: encryptedBase64, id: flaggedMsg.id, sender: flaggedMsg.sender});
-
+    const res = await sendToModerator({message: encryptedBase64, id: flaggedMsg.id, sender: flaggedMsg.sender});
+    
+     setMessages(prevMessages =>
+      prevMessages.map(msg =>
+        msg.id === flaggedMsg.id ? { ...msg, flagged: true } : msg
+      )
+    );
   } catch (err) {
     console.error('Failed to encrypt flagged message:', err);
   }
@@ -165,35 +171,64 @@ const handleFlag = async (flaggedMsg) => {
         Load Messages
       </button>
 
-      {decrypted && (
-        <> 
-          {inboxMessages.length > 0 ? (
-            inboxMessages.map((msg) => (
-              <div key={msg.id} style={{ border: '1px solid #ccc', borderRadius: '10px', padding: '15px', marginBottom: '15px', backgroundColor: '#f9f9f9', position: 'relative' }}>
-                <span style={{ position: 'absolute', top: '10px', right: '10px', cursor: 'pointer' }} onClick={() => handleFlag(msg)} title="Flag this message">
-                  🚩
-                </span>
-                <p style={{ margin: '0 0 8px 0' }}><strong>From:</strong> {msg.sender}</p>
-                <p style={{ margin: 0, whiteSpace: 'pre-wrap' }}>{msg.text}</p>
-              </div>
-            ))
-          ) : (
-            <p>No messages in inbox.</p>
-          )}
+     {decrypted && (
+  <>
+    {inboxMessages.length > 0 ? (
+      inboxMessages.map((msg) => (
+        <div
+          key={msg.id}
+          style={{
+            border: '1px solid #ccc',
+            borderRadius: '10px',
+            padding: '15px',
+            marginBottom: '15px',
+            backgroundColor: '#f9f9f9',
+            position: 'relative',
+          }}
+        >
+          <span
+            style={{ position: 'absolute', top: '10px', right: '10px', cursor: 'pointer' }}
+            onClick={() => handleFlag(msg)}
+            title="Flag this message"
+          >
+            🚩
+          </span>
+          <p style={{ margin: '0 0 8px 0' }}>
+            <strong>From:</strong> {msg.sender}
+          </p>
+          <p style={{ margin: 0, whiteSpace: 'pre-wrap' }}>{msg.text}</p>
+        </div>
+      ))
+    ) : (
+      <p>No messages in inbox.</p>
+    )}
 
-          {flaggedMessages.length > 0 && (
-            <>
-              <h3>🚩 Flagged</h3>
-              {flaggedMessages.map((msg) => (
-                <div key={msg.id} style={{ border: '1px solid #f99', borderRadius: '10px', padding: '15px', marginBottom: '15px', backgroundColor: '#fee', position: 'relative' }}>
-                  <p style={{ margin: '0 0 8px 0' }}><strong>From:</strong> {msg.sender}</p>
-                  <p style={{ margin: 0, whiteSpace: 'pre-wrap' }}>{msg.text}</p>
-                </div>
-              ))}
-            </>
-          )}
-        </>
-      )}
+    {flaggedMessages.length > 0 && (
+      <>
+        <h3>🚩 Flagged</h3>
+        {flaggedMessages.map((msg) => (
+          <div
+            key={msg.id}
+            style={{
+              border: '1px solid #f99',
+              borderRadius: '10px',
+              padding: '15px',
+              marginBottom: '15px',
+              backgroundColor: '#fee',
+              position: 'relative',
+            }}
+          >
+            <p style={{ margin: '0 0 8px 0' }}>
+              <strong>From:</strong> {msg.sender}
+            </p>
+            <p style={{ margin: 0, whiteSpace: 'pre-wrap' }}>{msg.text}</p>
+          </div>
+        ))}
+      </>
+    )}
+  </>
+)}
+
     </div>
   );
 }

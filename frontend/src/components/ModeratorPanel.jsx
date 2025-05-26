@@ -35,24 +35,6 @@ function ModeratorPanel() {
     alert('Key loaded!');
   };
 
-  async function getModeratorPublicKey(token) {
-  try {
-    const response = await axios.get('http://localhost:9090/api/moderation/mod-pub-key', {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    });
-    setmodID(response.data.id)
-    return response.data.publicKey;
-  } catch (error) {
-    if (error.response) {
-      console.error('Error:', error.response.data.error);
-    } else {
-      console.error('Network or server error:', error.message);
-    }
-    return null;
-  }
-} 
 
   const fetchMessages = async () => {
     if (!userId) return;
@@ -86,31 +68,22 @@ function ModeratorPanel() {
     setDecrypted(true);
   };
 
-  // 
-  const base64ToArrayBuffer = (base64) => {
-  const binary = atob(base64);
-  const len = binary.length;
-  const buffer = new Uint8Array(len);
-  for (let i = 0; i < len; i++) {
-    buffer[i] = binary.charCodeAt(i);
-  }
-  return buffer.buffer;
-};
 
-  const sendToModerator = async ({ message, id, sender}) => {
-    console.log('message is ', message)
+  const sendToAdmin = async (sender, flaggedmsg) => {
+
   try {
-     const res = await axios.post('http://localhost:9090/api/moderation/report', {
-      message,
-      id,
-      sender,
-      modID: modID
-    }, {
+     const res = await axios.post(`http://localhost:9090/api/admin/ban/${sender}`, {
       headers: { Authorization: 'Bearer ' + localStorage.getItem('token') }
     });
-    alert('Message sent to moderator.');
+    alert('Message sent to admin.');
     console.log(res.data);
-    return res.data;
+    
+      //on the frontend, move the message to the 'reviewed messages' section
+     setMessages(prevMessages =>
+      prevMessages.map(msg =>
+        msg.id === flaggedmsg.id ? { ...msg, flagged: true } : msg
+      )
+    )
   } catch (error) {
     console.error('Error sending to moderator:', error);
     throw error;
@@ -121,42 +94,18 @@ const handleBan = async (sender) => {
   try {
     console.log('tryna ban person w id', sender)
   
-      const res_key = await getModeratorPublicKey(token)
-      console.log('res key is, ', res_key)
-
-      setModKey(res_key)
-
-       const keyBuffer = base64ToArrayBuffer(res_key);
-
-    const importedKey = await window.crypto.subtle.importKey(
-      'spki',
-      keyBuffer,
-      { name: 'RSA-OAEP', hash: 'SHA-256' },
-      false,
-      ['encrypt']
-    );
-
-    const encrypted = await window.crypto.subtle.encrypt(
-      { name: 'RSA-OAEP' },
-      importedKey,
-      new TextEncoder().encode(flaggedMsg.text)
-    );
-
-    const encryptedBase64 = btoa(String.fromCharCode(...new Uint8Array(encrypted)));
-
-    // 6. Send `encryptedBase64` to your moderator endpoint…
-    await sendToModerator({message: encryptedBase64, id: flaggedMsg.id, sender: flaggedMsg.sender});
+    await sendToAdmin(sender);
 
   } catch (err) {
     console.error('Failed to encrypt flagged message:', err);
   }
 };
 
-const handleDontBan = async(msg)=>{
+const handleDontBan = async(flaggedmsg)=>{
  
     //change the message's flag from the backend (make it true)
     try {
-     const res = await axios.post(`http://localhost:9090/api/messages/change-review-status/${msg.msg.id}`, {
+     const res = await axios.post(`http://localhost:9090/api/messages/change-review-status/${flaggedmsg.id}`, {
     }, {
       headers: { Authorization: 'Bearer ' + localStorage.getItem('token') }
     });
@@ -165,6 +114,11 @@ const handleDontBan = async(msg)=>{
 console.log(error)
     }
     //on the frontend, move the message to the 'reviewed messages' section
+     setMessages(prevMessages =>
+      prevMessages.map(msg =>
+        msg.id === flaggedmsg.id ? { ...msg, flagged: true } : msg
+      )
+    );
     
 }
 
@@ -201,7 +155,7 @@ console.log(error)
               cursor: 'pointer',
               fontWeight: 'bold',
             }}
-            onClick={()=> handleBan({sender:msg.sender})}
+            onClick={()=> handleBan(msg.sender)}
           >
             🚫 Ban
           </button>
@@ -215,7 +169,7 @@ console.log(error)
               cursor: 'pointer',
               fontWeight: 'bold',
             }}
-            onClick={() => handleDontBan({msg})}
+            onClick={() => handleDontBan(msg)}
           >
             ✅ Don't Ban
           </button>
