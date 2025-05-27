@@ -166,75 +166,115 @@ const handleFlag = async (flaggedMsg) => {
   const inboxMessages = messages.filter((msg) => !msg.flagged);
   const flaggedMessages = messages.filter((msg) => msg.flagged);
 
-  return (
-    <div style={{ padding: '20px', fontFamily: 'sans-serif' }}>
-      <h3>📩 Inbox</h3>
-      <input type="file" onChange={loadKey} accept=".txt" style={{ marginBottom: '10px' }} />
-      <br />
-      <button onClick={fetchMessages} disabled={!privateKey} style={{ marginBottom: '20px' }}>
+return (
+  <div style={{
+    padding: '40px'
+  }}>
+    <div style={{
+      width: '100%',
+      backgroundColor: 'white',
+      borderRadius: '10px',
+      boxShadow: '0 8px 24px rgba(0,0,0,0.1)',
+      padding: '30px'
+    }}>
+      <h3 style={{ marginTop: 0, color: '#4f46e5' }}>📩 Inbox</h3>
+
+      <input
+        type="file"
+        onChange={loadKey}
+        accept=".txt"
+        style={{
+          marginBottom: '15px',
+          padding: '8px',
+          borderRadius: '6px',
+          border: '1px solid #ccc',
+          width: '100%'
+        }}
+      />
+      <button
+        onClick={fetchMessages}
+        disabled={!privateKey}
+        style={{
+          marginBottom: '25px',
+          padding: '10px',
+          borderRadius: '6px',
+          border: 'none',
+          backgroundColor: privateKey ? '#4f46e5' : '#ccc',
+          color: 'white',
+          fontWeight: 'bold',
+          width: '100%',
+          cursor: privateKey ? 'pointer' : 'not-allowed'
+        }}
+      >
         Load Messages
       </button>
 
-     {decrypted && (
-  <>
-    {inboxMessages.length > 0 ? (
-      inboxMessages.map((msg) => (
-        <div
-          key={msg.id}
-          style={{
-            border: '1px solid #ccc',
-            borderRadius: '10px',
-            padding: '15px',
-            marginBottom: '15px',
-            backgroundColor: '#f9f9f9',
-            position: 'relative',
-          }}
-        >
-          <span
-            style={{ position: 'absolute', top: '10px', right: '10px', cursor: 'pointer' }}
-            onClick={() => handleFlag(msg)}
-            title="Flag this message"
-          >
-            🚩
-          </span>
-          <p style={{ margin: '0 0 8px 0' }}>
-            <strong>From:</strong> {msg.sender}
-          </p>
-          <p style={{ margin: 0, whiteSpace: 'pre-wrap' }}>{msg.text}</p>
-        </div>
-      ))
-    ) : (
-      <p>No messages in inbox.</p>
-    )}
+      {decrypted && (
+        <>
+          {inboxMessages.length > 0 ? (
+            inboxMessages.map((msg) => (
+              <div
+                key={msg.id}
+                style={{
+                  border: '1px solid #ccc',
+                  borderRadius: '10px',
+                  padding: '15px',
+                  marginBottom: '15px',
+                  backgroundColor: '#f9f9f9',
+                  position: 'relative',
+                }}
+              >
+                <span
+                  style={{
+                    position: 'absolute',
+                    top: '10px',
+                    right: '10px',
+                    cursor: 'pointer',
+                    fontSize: '18px'
+                  }}
+                  onClick={() => handleFlag(msg)}
+                  title="Flag this message"
+                >
+                  🚩
+                </span>
+                <p style={{ margin: '0 0 8px 0' }}>
+                  <strong>From:</strong> {msg.sender}
+                </p>
+                <p style={{ margin: 0, whiteSpace: 'pre-wrap' }}>{msg.text}</p>
+              </div>
+            ))
+          ) : (
+            <p>No messages in inbox.</p>
+          )}
 
-    {flaggedMessages.length > 0 && (
-      <>
-        <h3>🚩 Flagged</h3>
-        {flaggedMessages.map((msg) => (
-          <div
-            key={msg.id}
-            style={{
-              border: '1px solid #f99',
-              borderRadius: '10px',
-              padding: '15px',
-              marginBottom: '15px',
-              backgroundColor: '#fee',
-              position: 'relative',
-            }}
-          >
-            <p style={{ margin: '0 0 8px 0' }}>
-              <strong>From:</strong> {msg.sender}
-            </p>
-            <p style={{ margin: 0, whiteSpace: 'pre-wrap' }}>{msg.text}</p>
-          </div>
-        ))}
-      </>
-    )}
-  </>
-)}
-
+          {flaggedMessages.length > 0 && (
+            <>
+              <h3 style={{ color: '#e11d48' }}>🚩 Flagged</h3>
+              {flaggedMessages.map((msg) => (
+                <div
+                  key={msg.id}
+                  style={{
+                    border: '1px solid #f99',
+                    borderRadius: '10px',
+                    padding: '15px',
+                    marginBottom: '15px',
+                    backgroundColor: '#fee',
+                    position: 'relative',
+                  }}
+                >
+                  <p style={{ margin: '0 0 8px 0' }}>
+                    <strong>From:</strong> {msg.sender}
+                  </p>
+                  <p style={{ margin: 0, whiteSpace: 'pre-wrap' }}>{msg.text}</p>
+                </div>
+              ))}
+            </>
+          )}
+        </>
+      )}
     </div>
-  );
+  </div>
+);
 }
 
 export default RecipientInbox;

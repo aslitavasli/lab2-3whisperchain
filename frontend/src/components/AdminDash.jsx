@@ -92,16 +92,41 @@ const AdminDash = () => {
       });
   };
 
-  return (
-    <div className="p-6">
-      <h2 className="text-2xl font-bold mb-6">Admin Dashboard - Manage Users</h2>
+ return (
+  <div style={{
+    display: 'flex',
+    justifyContent: 'center',
+    padding: '40px',
+    fontFamily: 'sans-serif',
+  
+  }}>
+    <div style={{
+      width: '100%',
+      maxWidth: '900px',
+      backgroundColor: 'white',
+      borderRadius: '10px',
+      boxShadow: '0 8px 24px rgba(0,0,0,0.1)',
+      padding: '30px'
+    }}>
+      <h2 style={{
+        marginTop: 0,
+        marginBottom: '30px',
+        color: '#4f46e5',
+        textAlign: 'center'
+      }}>
+        🔧 Admin Dashboard – Manage Users
+      </h2>
 
-      <table className="min-w-full border border-gray-300 mb-4">
-        <thead className="bg-gray-100">
-          <tr>
-            <th className="p-3 border-b">Username</th>
-            <th className="p-3 border-b">Current Role</th>
-            <th className="p-3 border-b">Change Role to</th>
+      <table style={{
+        width: '100%',
+        borderCollapse: 'collapse',
+        marginBottom: '30px'
+      }}>
+        <thead>
+          <tr style={{ backgroundColor: '#f9f9f9', color: '#555' }}>
+            <th style={{ padding: '12px', borderBottom: '1px solid #ccc', textAlign: 'left' }}>Username</th>
+            <th style={{ padding: '12px', borderBottom: '1px solid #ccc', textAlign: 'left' }}>Current Role</th>
+            <th style={{ padding: '12px', borderBottom: '1px solid #ccc', textAlign: 'left' }}>Change Role To</th>
           </tr>
         </thead>
         <tbody>
@@ -111,16 +136,22 @@ const AdminDash = () => {
             const selectedRole = roleChanges[userId] ?? actualRole;
 
             return (
-              <tr key={userId} className="hover:bg-gray-50">
-                <td className="p-3 border-b text-center">{user.username}</td>
-                <td className="p-3 border-b text-center">{getRoleLabel(user)}</td>
-                <td className="p-3 border-b text-center">
+              <tr key={userId} style={{ borderBottom: '1px solid #eee', backgroundColor: '#fff' }}>
+                <td style={{ padding: '12px' }}>{user.username}</td>
+                <td style={{ padding: '12px' }}>{getRoleLabel(user)}</td>
+                <td style={{ padding: '12px' }}>
                   <select
                     value={selectedRole}
                     onChange={(e) =>
                       handleSelectChange(userId, parseInt(e.target.value, 10))
                     }
-                    className="border px-2 py-1 rounded"
+                    style={{
+                      padding: '8px 10px',
+                      borderRadius: '6px',
+                      border: '1px solid #ccc',
+                      backgroundColor: '#fff',
+                      fontSize: '1rem'
+                    }}
                   >
                     <option value={0}>User</option>
                     <option value={1}>Moderator</option>
@@ -134,15 +165,26 @@ const AdminDash = () => {
       </table>
 
       {Object.keys(roleChanges).length > 0 && (
-        <button
-          onClick={handleUpdateRoles}
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-        >
-          Update Roles
-        </button>
+        <div style={{ textAlign: 'center' }}>
+          <button
+            onClick={handleUpdateRoles}
+            style={{
+              padding: '10px 20px',
+              borderRadius: '6px',
+              border: 'none',
+              backgroundColor: '#4f46e5',
+              color: 'white',
+              fontWeight: 'bold',
+              cursor: 'pointer'
+            }}
+          >
+            ✅ Update Roles
+          </button>
+        </div>
       )}
     </div>
-  );
+  </div>
+);
 };
 
 export default AdminDash;

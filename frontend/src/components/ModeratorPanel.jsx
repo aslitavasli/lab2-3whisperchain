@@ -134,78 +134,139 @@ console.log(error)
   const inboxMessages = messages.filter((msg) => !msg.flagged);
   const flaggedMessages = messages.filter((msg) => msg.flagged);
 
-  return (
-    <div style={{ padding: '20px', fontFamily: 'sans-serif' }}>
-      <h3>📩 Load Your Inbox</h3>
-      <input type="file" onChange={loadKey} accept=".txt" style={{ marginBottom: '10px' }} />
-      <br />
-      <button onClick={fetchMessages} disabled={!privateKey} style={{ marginBottom: '20px' }}>
+ return (
+  <div style={{
+    display: 'flex',
+    justifyContent: 'center',
+    padding: '40px',
+    fontFamily: 'sans-serif',
+  }}>
+    <div style={{
+      width: '100%',
+      maxWidth: '600px',
+      backgroundColor: 'white',
+      borderRadius: '10px',
+      boxShadow: '0 8px 24px rgba(0,0,0,0.1)',
+      padding: '30px'
+    }}>
+      <h3 style={{ color: '#4f46e5', marginTop: 0 }}>📩 Load Your Inbox</h3>
+
+      <input
+        type="file"
+        onChange={loadKey}
+        accept=".txt"
+        style={{
+          marginBottom: '15px',
+          padding: '8px',
+          borderRadius: '6px',
+          border: '1px solid #ccc',
+          width: '100%'
+        }}
+      />
+
+      <button
+        onClick={fetchMessages}
+        disabled={!privateKey}
+        style={{
+          marginBottom: '25px',
+          padding: '10px',
+          borderRadius: '6px',
+          border: 'none',
+          backgroundColor: privateKey ? '#4f46e5' : '#ccc',
+          color: 'white',
+          fontWeight: 'bold',
+          width: '100%',
+          cursor: privateKey ? 'pointer' : 'not-allowed'
+        }}
+      >
         Load Messages
       </button>
 
       {decrypted && (
-        <> 
-    
-          {inboxMessages.length > 0 && (
         <>
-    <h3>Messages to Review</h3>
-    {inboxMessages.map((msg) => (
-      <div key={msg.id} style={{ border: '1px solid #f99', borderRadius: '10px', padding: '15px', marginBottom: '15px', backgroundColor: '#fee', position: 'relative' }}>
-        <p style={{ margin: '0 0 8px 0' }}><strong>From:</strong> {msg.sender}</p>
-        <p style={{ margin: 0, whiteSpace: 'pre-wrap' }}>{msg.text}</p>
-        <div style={{ marginTop: '10px', display: 'flex', gap: '10px' }}>
-          <button
-            style={{
-              backgroundColor: '#ff4d4f',
-              color: '#fff',
-              border: 'none',
-              borderRadius: '8px',
-              padding: '8px 12px',
-              cursor: 'pointer',
-              fontWeight: 'bold',
-            }}
-            onClick={()=> handleBan(msg.sender, msg)}
-          >
-            🚫 Ban
-          </button>
-          <button
-            style={{
-              backgroundColor: '#4CAF50',
-              color: '#fff',
-              border: 'none',
-              borderRadius: '8px',
-              padding: '8px 12px',
-              cursor: 'pointer',
-              fontWeight: 'bold',
-            }}
-            onClick={() => handleDontBan(msg)}
-          >
-            ✅ Don't Ban
-          </button>
-        </div>
-      
-      </div>
-      
+          {inboxMessages.length > 0 && (
+            <>
+              <h3 style={{ color: '#e11d48' }}>Messages to Review</h3>
+              {inboxMessages.map((msg) => (
+                <div
+                  key={msg.id}
+                  style={{
+                    border: '1px solid #f99',
+                    borderRadius: '10px',
+                    padding: '15px',
+                    marginBottom: '15px',
+                    backgroundColor: '#fee',
+                    position: 'relative',
+                  }}
+                >
+                  <p style={{ margin: '0 0 8px 0' }}>
+                    <strong>From:</strong> {msg.sender}
+                  </p>
+                  <p style={{ margin: 0, whiteSpace: 'pre-wrap' }}>{msg.text}</p>
+                  <div style={{
+                    marginTop: '10px',
+                    display: 'flex',
+                    gap: '10px'
+                  }}>
+                    <button
+                      style={{
+                        backgroundColor: '#dc2626',
+                        color: '#fff',
+                        border: 'none',
+                        borderRadius: '8px',
+                        padding: '8px 12px',
+                        cursor: 'pointer',
+                        fontWeight: 'bold',
+                      }}
+                      onClick={() => handleBan(msg.sender, msg)}
+                    >
+                      🚫 Ban
+                    </button>
+                    <button
+                      style={{
+                        backgroundColor: '#16a34a',
+                        color: '#fff',
+                        border: 'none',
+                        borderRadius: '8px',
+                        padding: '8px 12px',
+                        cursor: 'pointer',
+                        fontWeight: 'bold',
+                      }}
+                      onClick={() => handleDontBan(msg)}
+                    >
+                      ✅ Don't Ban
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </>
+          )}
 
-    ))}
-  </>
-)}
-
+          {flaggedMessages.length > 0 && (
+            <>
+              <h3 style={{ color: '#64748b' }}>Reviewed Messages</h3>
+              {flaggedMessages.map((msg) => (
+                <div
+                  key={msg.id}
+                  style={{
+                    border: '1px solid #ccc',
+                    borderRadius: '10px',
+                    padding: '15px',
+                    marginBottom: '15px',
+                    backgroundColor: '#f4f4f4',
+                  }}
+                >
+                  <p><strong>From:</strong> {msg.sender}</p>
+                  <p style={{ whiteSpace: 'pre-wrap' }}>{msg.text}</p>
+                </div>
+              ))}
+            </>
+          )}
         </>
       )}
-        {flaggedMessages.length > 0 && (
-  <>
-    <h3>Reviewed Messages</h3>
-    {flaggedMessages.map((msg) => (
-      <div key={msg.id} style={{ border: '1px solid #ccc', borderRadius: '10px', padding: '15px', marginBottom: '15px', backgroundColor: '#f4f4f4' }}>
-        <p><strong>From:</strong> {msg.sender}</p>
-        <p style={{ whiteSpace: 'pre-wrap' }}>{msg.text}</p>
-      </div>
-    ))}
-  </>
-)}
     </div>
-  );
+  </div>
+);
 }
 
 export default ModeratorPanel;

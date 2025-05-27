@@ -63,12 +63,27 @@ function AdminPanel() {
   };
 
   return (
-    <div style={{ padding: '20px', fontFamily: 'sans-serif' }}>
-      <h2>🔒 Admin Panel</h2>
-      <h4>Users requested to be banned by the moderators:</h4>
+  <div style={{
+    display: 'flex',
+    justifyContent: 'center',
+    padding: '40px',
+    fontFamily: 'sans-serif',
+  }}>
+    <div style={{
+      width: '100%',
+      maxWidth: '600px',
+      backgroundColor: 'white',
+      borderRadius: '10px',
+      boxShadow: '0 8px 24px rgba(0,0,0,0.1)',
+      padding: '30px'
+    }}>
+      <h2 style={{ marginTop: 0, color: '#4f46e5' }}>🔒 Admin Panel</h2>
+      <h4 style={{ color: '#333' }}>
+        Users requested to be banned by the moderators:
+      </h4>
 
       {messages.length === 0 ? (
-        <p>No users to review.</p>
+        <p style={{ color: '#555' }}>No users to review.</p>
       ) : (
         messages.map((msg) => (
           <div
@@ -81,11 +96,13 @@ function AdminPanel() {
               backgroundColor: '#fee',
             }}
           >
-            <p><strong>User ID:</strong> {msg.sender}</p>
+            <p style={{ marginBottom: '10px' }}>
+              <strong>User ID:</strong> {msg.sender}
+            </p>
             <button
               onClick={() => handleBan(msg.sender)}
               style={{
-                backgroundColor: '#ff4d4f',
+                backgroundColor: '#dc2626',
                 color: 'white',
                 border: 'none',
                 padding: '8px 12px',
@@ -100,7 +117,8 @@ function AdminPanel() {
         ))
       )}
     </div>
-  );
+  </div>
+);
 }
 
 export default AdminPanel;
