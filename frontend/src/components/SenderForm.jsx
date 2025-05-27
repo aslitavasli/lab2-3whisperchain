@@ -75,24 +75,74 @@ function SenderForm() {
   }
   };
 
-  return (
-    <form onSubmit={handleSend}>
-      <h3>Hello, {username}! </h3>
-      <h3> Send Encrypted Message</h3>
-      <select value={recipientUsername} onChange={(e) => setRecipientUsername(e.target.value)}>
-        <option value="">Select Recipient</option>
-       {users
-      .filter(user => user.username !== username)
-      .map(user => (
-        <option key={user._id} value={user.username}>
-        {user.username}
-        </option>
-))}
-      </select>
-      <textarea value={message} onChange={(e) => setMessage(e.target.value)} />
-      <button type='submit'>Send</button>
-    </form>
+   return (
+    <div style={{
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      fontFamily: 'sans-serif'
+    }}>
+      <form onSubmit={handleSend} style={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '15px',
+        padding: '40px',
+        borderRadius: '10px',
+        backgroundColor: 'white',
+        boxShadow: '0 8px 24px rgba(0,0,0,0.1)',
+        width: '350px'
+      }}>
+        <h3 style={{ margin: 0, color: '#333', textAlign: 'center' }}>
+          Hello, {username}!
+        </h3>
+        <h3 style={{ margin: 0, color: '#4f46e5', textAlign: 'center' }}>
+          Send Encrypted Message
+        </h3>
+        <select
+          value={recipientUsername}
+          onChange={(e) => setRecipientUsername(e.target.value)}
+          style={{
+            padding: '10px',
+            borderRadius: '6px',
+            border: '1px solid #ccc'
+          }}
+        >
+          <option value="">Select Recipient</option>
+          {users
+            .filter(user => user.username !== username)
+            .map(user => (
+              <option key={user._id} value={user.username}>
+                {user.username}
+              </option>
+            ))}
+        </select>
+        <textarea
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          placeholder="Say something nice..."
+          style={{
+            padding: '10px',
+            height: '100px',
+            borderRadius: '6px',
+            border: '1px solid #ccc',
+            resize: 'vertical'
+          }}
+        />
+        <button type="submit" style={{
+          padding: '10px',
+          borderRadius: '6px',
+          border: 'none',
+          backgroundColor: '#4f46e5',
+          color: 'white',
+          fontWeight: 'bold',
+          cursor: 'pointer'
+        }}>
+          Send
+        </button>
+      </form>
+    </div>
   );
 }
+
 
 export default SenderForm;

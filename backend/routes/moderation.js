@@ -12,39 +12,44 @@ router.get('/flagged', verifyToken, async (req, res) => {
 
 router.post('/report', verifyToken, async (req, res) => {
   const {
-    message: encryptedMessage, id, sender, modID,
+    message: encryptedMessage,
+    id,
+    sender,
+    modID,
   } = req.body;
   console.log('id is', id);
   try {
+    console.log('moderating', id);
     // Find the specific moderator by ID
     const moderator = await User.findById(modID);
+
     if (!moderator || !moderator.isModerator) {
-      return res.status(404).json({ error: 'Moderator not found or not valid.' });
+      return res.status(231).json({ error: 'Moderator not found or not valid.' });
     }
 
-    // 3. Create a new message for the moderator's inbox
+    // 3. Create a new message for the moderator's inbox we are using the flagged as to mean reviewed
     const reportMessage = new Message({
       sender,
       encryptedMessage,
+      flagged: false,
     });
     await reportMessage.save();
 
+    console.log('report message', reportMessage);
     // 4. Add this new message to moderator's `messages`
-    moderator.messages.push(reportMessage._id);
+    moderator.messages.push(reportMessage);
     await moderator.save();
 
     // Mark the og message as flagged
-    const updatedMessage = await Message.findByIdAndUpdate(
-      id,
-      { flagged: true },
-      { new: true },
-    );
-
-    if (!updatedMessage) {
+    const msgToUpdate = await Message.findById(id);
+    if (!msgToUpdate) {
       return res.status(404).json({ error: 'Original message not found.' });
     }
+    msgToUpdate.flagged = true;
+    await msgToUpdate.save();
 
-    res.json({ success: true, moderatorId: moderator._id, flaggedMessage: updatedMessage });
+    console.log('updated', msgToUpdate);
+    res.json({ success: true, moderatorId: moderator._id, flaggedMessage: msgToUpdate });
   } catch (err) {
     console.error('Error reporting message:', err);
     res.status(500).json({ error: 'Server error while reporting message.' });

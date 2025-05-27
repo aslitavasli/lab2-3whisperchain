@@ -21,7 +21,7 @@ router.post('/send', verifyToken, async (req, res) => {
   if (!sender) {
     return res.status(500).json({ message: 'An error occured. Please log out and try agaisn.' });
   }
-  // check if the user has exhausted their limit?
+  // // check if the user has exhausted their limit?
   if (sender.hasUsedMessage) {
     return res.status(480).json({ message: 'You have reached your message limit. Send again after the session resets.' });
   }
@@ -57,14 +57,36 @@ router.get('/inbox/:recipientId', verifyToken, async (req, res) => {
     .populate({ path: 'messages' });
 
   if (!user) return res.status(404).json({ message: 'User not found' });
-
+  console.log(user.messages);
   res.json(user.messages);
 });
 
-router.post('/flag/:id', verifyToken, requireRole('recipient'), async (req, res) => {
+router.post('/flag/:id', verifyToken, async (req, res) => {
   await Message.findByIdAndUpdate(req.params.id, { flagged: true });
-  await Log.create({ action: 'flag_message', role: req.user.role });
+  const logEntry = `[${new Date().toISOString()}] Message with the id ${req.params.id} got flagged by its recipient.\n`;
+  const logPath = path.join(__dirname, '..', 'audit_logs.txt');
+
+  fs.appendFile(logPath, logEntry, (err) => {
+    if (err) {
+      console.error('Failed to write to audit log:', err);
+    }
+  });
   res.json({ message: 'Message flagged' });
+});
+
+// if a moderator decides that the message is ok, just change the message's boolean as flagged=true
+// (means reviewed=true in moderator's context)
+router.post('/change-review-status/:id', verifyToken, async (req, res) => {
+  await Message.findByIdAndUpdate(req.params.id, { flagged: true });
+  const logEntry = `[${new Date().toISOString()}] The message ${req.params.id} has been reviewed by a moderator.\n`;
+  const logPath = path.join(__dirname, '..', 'audit_logs.txt');
+
+  fs.appendFile(logPath, logEntry, (err) => {
+    if (err) {
+      console.error('Failed to write to audit log:', err);
+    }
+  });
+  res.json({ message: 'Message reviewed' });
 });
 
 module.exports = router;

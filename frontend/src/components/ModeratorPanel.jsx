@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Buffer } from 'buffer';
-function RecipientInbox() {
+function ModeratorPanel() {
   const [messages, setMessages] = useState([]);
   const [privateKey, setPrivateKey] = useState(null);
   const [userId, setUserId] = useState(null);
@@ -9,6 +9,7 @@ function RecipientInbox() {
   const [modKey, setModKey] = useState(null);
   const [modID, setmodID] = useState(null)
   const [token, setToken] = useState(null)
+  
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) return;
@@ -35,27 +36,6 @@ function RecipientInbox() {
     alert('Key loaded!');
   };
 
-  async function getModeratorPublicKey(token) {
-  try {
-    const response = await axios.get('http://localhost:9090/api/moderation/mod-pub-key', {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    });
-    setmodID(response.data.id)
-    console.log('mod id is', response.data.id)
-    return { 
-      publicKey: response.data.publicKey,
-      modID: response.data.id}
-  } catch (error) {
-    if (error.response) {
-      console.error('Error:', error.response.data.error);
-    } else {
-      console.error('Network or server error:', error.message);
-    }
-    return null;
-  }
-} 
 
   const fetchMessages = async () => {
     if (!userId) return;
@@ -89,95 +69,87 @@ function RecipientInbox() {
     setDecrypted(true);
   };
 
-  const base64ToArrayBuffer = (base64) => {
-  const binary = atob(base64);
-  const len = binary.length;
-  const buffer = new Uint8Array(len);
-  for (let i = 0; i < len; i++) {
-    buffer[i] = binary.charCodeAt(i);
-  }
-  return buffer.buffer;
-};
 
-  const sendToModerator = async ({ message, id, sender, modID}) => {
-    console.log('message is ', message)
+  const sendToAdmin = async (sender, flaggedmsg) => {
+      console.log(sender)
   try {
-     const res = await axios.post('http://localhost:9090/api/moderation/report', {
-      message,
-      id,
-      sender,
-      modID
-    }, {
-      headers: { Authorization: 'Bearer ' + localStorage.getItem('token') }
-    });
-    alert('Message sent to moderator.');
+      const res = await axios.post(
+      `http://localhost:9090/api/admin/ban/${sender}`,
+      {}, 
+      {
+        headers: { Authorization: 'Bearer ' + localStorage.getItem('token') }
+      }
+    );
+
+    alert('Ban request made to the admin.');
     console.log(res.data);
-    return res.data;
+    
+      //on the frontend, move the message to the 'reviewed messages' section
+     setMessages(prevMessages =>
+      prevMessages.map(msg =>
+        msg.id === flaggedmsg.id ? { ...msg, flagged: true } : msg
+      )
+    )
   } catch (error) {
     console.error('Error sending to moderator:', error);
     throw error;
   }
 };
 
-const handleFlag = async (flaggedMsg) => {
+const handleBan = async (sender, flaggedmsg) => {
   try {
-    console.log('tryna flag', flaggedMsg)
+    console.log('tryna ban person w id', sender)
   
-   
-      const { publicKey: res_key, modID: resolvedModID } = await getModeratorPublicKey(token)
+    await sendToAdmin(sender, flaggedmsg);
 
-      console.log('res key is, ', res_key)
-    
-      console.log('HERE', resolvedModID)
-      setModKey(res_key)
-
-       const keyBuffer = base64ToArrayBuffer(res_key);
-
-    const importedKey = await window.crypto.subtle.importKey(
-      'spki',
-      keyBuffer,
-      { name: 'RSA-OAEP', hash: 'SHA-256' },
-      false,
-      ['encrypt']
-    );
-
-    const encrypted = await window.crypto.subtle.encrypt(
-      { name: 'RSA-OAEP' },
-      importedKey,
-      new TextEncoder().encode(flaggedMsg.text)
-    );
-
-    const encryptedBase64 = btoa(String.fromCharCode(...new Uint8Array(encrypted)));
-
-    // 6. Send `encryptedBase64` to your moderator endpoint…
-    const res = await sendToModerator({message: encryptedBase64, id: flaggedMsg.id, sender: flaggedMsg.sender, modID: resolvedModID});
-    
-     setMessages(prevMessages =>
-      prevMessages.map(msg =>
-        msg.id === flaggedMsg.id ? { ...msg, flagged: true } : msg
-      )
-    );
   } catch (err) {
-    console.error('Failed to encrypt flagged message:', err);
+    console.error(err);
+    alert("Something went wrong, please try again!")
   }
+  //update the frontend and change review message to reviewed
+  handleDontBan(flaggedmsg)
 };
 
+const handleDontBan = async(flaggedmsg)=>{
+ 
+    //change the message's flag from the backend (make it true)
+    try {
+     const res = await axios.post(`http://localhost:9090/api/messages/change-review-status/${flaggedmsg.id}`, {
+    }, {
+      headers: { Authorization: 'Bearer ' + localStorage.getItem('token') }
+    });
+    console.log(res)
+}catch (error){
+console.log(error)
+    }
+    //on the frontend, move the message to the 'reviewed messages' section
+     setMessages(prevMessages =>
+      prevMessages.map(msg =>
+        msg.id === flaggedmsg.id ? { ...msg, flagged: true } : msg
+      )
+    );
+    
+}
 
   const inboxMessages = messages.filter((msg) => !msg.flagged);
   const flaggedMessages = messages.filter((msg) => msg.flagged);
 
-return (
+ return (
   <div style={{
-    padding: '40px'
+    display: 'flex',
+    justifyContent: 'center',
+    padding: '40px',
+    fontFamily: 'sans-serif',
   }}>
     <div style={{
       width: '100%',
+      maxWidth: '600px',
       backgroundColor: 'white',
       borderRadius: '10px',
       boxShadow: '0 8px 24px rgba(0,0,0,0.1)',
       padding: '30px'
     }}>
-      <h3 style={{ marginTop: 0, color: '#4f46e5' }}>📩 Inbox</h3>
+      <h3 style={{ color: '#4f46e5', marginTop: 0 }}>📩 Load Your Inbox</h3>
 
       <input
         type="file"
@@ -191,6 +163,7 @@ return (
           width: '100%'
         }}
       />
+
       <button
         onClick={fetchMessages}
         disabled={!privateKey}
@@ -211,46 +184,10 @@ return (
 
       {decrypted && (
         <>
-          {inboxMessages.length > 0 ? (
-            inboxMessages.map((msg) => (
-              <div
-                key={msg.id}
-                style={{
-                  border: '1px solid #ccc',
-                  borderRadius: '10px',
-                  padding: '15px',
-                  marginBottom: '15px',
-                  backgroundColor: '#f9f9f9',
-                  position: 'relative',
-                }}
-              >
-                <span
-                  style={{
-                    position: 'absolute',
-                    top: '10px',
-                    right: '10px',
-                    cursor: 'pointer',
-                    fontSize: '18px'
-                  }}
-                  onClick={() => handleFlag(msg)}
-                  title="Flag this message"
-                >
-                  🚩
-                </span>
-                <p style={{ margin: '0 0 8px 0' }}>
-                  <strong>From:</strong> {msg.sender}
-                </p>
-                <p style={{ margin: 0, whiteSpace: 'pre-wrap' }}>{msg.text}</p>
-              </div>
-            ))
-          ) : (
-            <p>No messages in inbox.</p>
-          )}
-
-          {flaggedMessages.length > 0 && (
+          {inboxMessages.length > 0 && (
             <>
-              <h3 style={{ color: '#e11d48' }}>🚩 Flagged</h3>
-              {flaggedMessages.map((msg) => (
+              <h3 style={{ color: '#e11d48' }}>Messages to Review</h3>
+              {inboxMessages.map((msg) => (
                 <div
                   key={msg.id}
                   style={{
@@ -266,6 +203,61 @@ return (
                     <strong>From:</strong> {msg.sender}
                   </p>
                   <p style={{ margin: 0, whiteSpace: 'pre-wrap' }}>{msg.text}</p>
+                  <div style={{
+                    marginTop: '10px',
+                    display: 'flex',
+                    gap: '10px'
+                  }}>
+                    <button
+                      style={{
+                        backgroundColor: '#dc2626',
+                        color: '#fff',
+                        border: 'none',
+                        borderRadius: '8px',
+                        padding: '8px 12px',
+                        cursor: 'pointer',
+                        fontWeight: 'bold',
+                      }}
+                      onClick={() => handleBan(msg.sender, msg)}
+                    >
+                      🚫 Ban
+                    </button>
+                    <button
+                      style={{
+                        backgroundColor: '#16a34a',
+                        color: '#fff',
+                        border: 'none',
+                        borderRadius: '8px',
+                        padding: '8px 12px',
+                        cursor: 'pointer',
+                        fontWeight: 'bold',
+                      }}
+                      onClick={() => handleDontBan(msg)}
+                    >
+                      ✅ Don't Ban
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </>
+          )}
+
+          {flaggedMessages.length > 0 && (
+            <>
+              <h3 style={{ color: '#64748b' }}>Reviewed Messages</h3>
+              {flaggedMessages.map((msg) => (
+                <div
+                  key={msg.id}
+                  style={{
+                    border: '1px solid #ccc',
+                    borderRadius: '10px',
+                    padding: '15px',
+                    marginBottom: '15px',
+                    backgroundColor: '#f4f4f4',
+                  }}
+                >
+                  <p><strong>From:</strong> {msg.sender}</p>
+                  <p style={{ whiteSpace: 'pre-wrap' }}>{msg.text}</p>
                 </div>
               ))}
             </>
@@ -277,4 +269,4 @@ return (
 );
 }
 
-export default RecipientInbox;
+export default ModeratorPanel;
