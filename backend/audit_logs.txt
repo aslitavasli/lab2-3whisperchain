@@ -41,3 +41,31 @@
 [2025-05-26T22:21:56.620Z] 6834e9792cb58749936449b2 sent a message to enzo
 [2025-05-26T22:25:47.388Z] 6834ea534b3776803df679cb sent a message to enzo
 [2025-05-26T22:27:36.361Z] 6834ea534b3776803df679cb sent a message to enzo
+[2025-05-27T01:14:09.614Z] User with the 6834de0b675983f9bc0d134e has been changed to a(n) user. 
+[2025-05-27T01:14:09.616Z] User with the 6834e9792cb58749936449b2 has been changed to a(n) user. 
+[2025-05-27T01:14:36.242Z] 6834de0b675983f9bc0d134e sent a message to fake
+[2025-05-27T01:15:02.133Z] 6834e9792cb58749936449b2 sent a message to enzo
+[2025-05-27T01:16:11.621Z] User with the 6834dd46675983f9bc0d1324 has been changed to a(n) user. 
+[2025-05-27T01:16:31.520Z] 6834e9792cb58749936449b2 sent a message to enzo
+[2025-05-27T01:16:53.854Z] 6834e9792cb58749936449b2 sent a message to enzo
+[2025-05-27T01:17:09.584Z] The message 6835128b76cd8aad07edd6b4 has been reviewed by a moderator.
+[2025-05-27T01:17:14.028Z] 6834e9792cb58749936449b2 has been requested to be banned by a moderator. 
+[2025-05-27T01:17:15.725Z] The message 6835127876cd8aad07edd69f has been reviewed by a moderator.
+[2025-05-27T01:17:37.338Z] The user 6834e9792cb58749936449b2 has been banned by an admin.
+[2025-05-27T01:49:55.906Z] 68351a132c85ad8b3e786f2f sent a message to enzo
+[2025-05-27T02:03:24.730Z] 68351a132c85ad8b3e786f2f sent a message to enzo
+[2025-05-27T02:16:59.943Z] 68351a132c85ad8b3e786f2f has been requested to be banned by a moderator. 
+[2025-05-27T02:17:01.423Z] The message 68351a6c2c85ad8b3e786f45 has been reviewed by a moderator.
+[2025-05-27T02:17:18.531Z] The user 68351a132c85ad8b3e786f2f has been banned by an admin.
+[2025-05-27T02:17:56.325Z] 683520c842ac9648daab398c sent a message to enzo
+[2025-05-27T02:18:10.283Z] 683520c842ac9648daab398c has been requested to be banned by a moderator. 
+[2025-05-27T02:18:11.521Z] The message 683520d942ac9648daab399b has been reviewed by a moderator.
+[2025-05-27T02:18:15.513Z] 68351a132c85ad8b3e786f2f has been requested to be banned by a moderator. 
+[2025-05-27T02:18:16.579Z] The message 6835208142ac9648daab3951 has been reviewed by a moderator.
+[2025-05-27T02:18:41.906Z] The user 683520c842ac9648daab398c has been banned by an admin.
+[2025-05-27T02:20:28.784Z] 6835216142ac9648daab3a09 sent a message to enzo
+[2025-05-27T02:21:53.065Z] 6835216142ac9648daab3a09 sent a message to enzo
+[2025-05-27T02:22:13.428Z] 6835216142ac9648daab3a09 has been requested to be banned by a moderator. 
+[2025-05-27T02:22:14.770Z] The message 683521af42ac9648daab3a28 has been reviewed by a moderator.
+[2025-05-27T02:22:44.901Z] The user 6835216142ac9648daab3a09 has been banned by an admin.
+[2025-05-27T02:23:13.168Z] User with the 6834de0b675983f9bc0d134e has been changed to a(n) moderator. 

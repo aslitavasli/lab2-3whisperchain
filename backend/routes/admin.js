@@ -1,4 +1,6 @@
 const express = require('express');
+const fs = require('fs');
+const path = require('path');
 const Message = require('../models/Message');
 
 const router = express.Router();
@@ -19,6 +21,14 @@ router.post('/ban/:id', verifyToken, async (req, res) => {
     return res.status(401).json({ error: 'No admin found' });
   }
 
+  const logEntry = `[${new Date().toISOString()}] ${req.params.id} has been requested to be banned by a moderator. \n`;
+  const logPath = path.join(__dirname, '..', 'audit_logs.txt');
+
+  fs.appendFile(logPath, logEntry, (err) => {
+    if (err) {
+      console.error('Failed to write to audit log:', err);
+    }
+  });
   // banning the user w/ the id
   const banModel = new Message({
     sender: req.params.id,
@@ -68,6 +78,15 @@ router.delete('/admin-ban/:id', verifyToken, async (req, res) => {
       console.log('admin messages', admin.messages);
     }
 
+    const logEntry = `[${new Date().toISOString()}] The user ${userId} has been banned by an admin.\n`;
+    const logPath = path.join(__dirname, '..', 'audit_logs.txt');
+
+    fs.appendFile(logPath, logEntry, (err) => {
+      if (err) {
+        console.error('Failed to write to audit log:', err);
+      }
+    });
+
     res.status(200).json({
       message: 'User deleted and messages cleaned from admin inboxes',
       user: deletedUser,
@@ -91,13 +110,16 @@ router.put('/user/role/:id', async (req, res) => {
     return res.status(400).json({ error: 'Invalid role value. Use 0, 1, or 2.' });
   }
 
+  let title = 'user';
   let isAdmin = false;
   let isModerator = false;
 
   if (roleNum === 1) {
     isModerator = true;
+    title = 'moderator';
   } else if (roleNum === 2) {
     isAdmin = true;
+    title = 'admin';
   }
 
   try {
@@ -120,6 +142,15 @@ router.put('/user/role/:id', async (req, res) => {
     // Step 3: Clear the user's messages array
     user.messages = [];
     await user.save();
+
+    const logEntry = `[${new Date().toISOString()}] User with the ${id} has been changed to a(n) ${title}. \n`;
+    const logPath = path.join(__dirname, '..', 'audit_logs.txt');
+
+    fs.appendFile(logPath, logEntry, (err) => {
+      if (err) {
+        console.error('Failed to write to audit log:', err);
+      }
+    });
 
     res.status(200).json({ message: 'User role updated successfully.', user });
   } catch (err) {

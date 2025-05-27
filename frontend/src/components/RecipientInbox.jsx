@@ -44,7 +44,9 @@ function RecipientInbox() {
     });
     setmodID(response.data.id)
     console.log('mod id is', response.data.id)
-    return response.data.publicKey;
+    return { 
+      publicKey: response.data.publicKey,
+      modID: response.data.id}
   } catch (error) {
     if (error.response) {
       console.error('Error:', error.response.data.error);
@@ -97,14 +99,14 @@ function RecipientInbox() {
   return buffer.buffer;
 };
 
-  const sendToModerator = async ({ message, id, sender}) => {
+  const sendToModerator = async ({ message, id, sender, modID}) => {
     console.log('message is ', message)
   try {
      const res = await axios.post('http://localhost:9090/api/moderation/report', {
       message,
       id,
       sender,
-      modID: modID
+      modID
     }, {
       headers: { Authorization: 'Bearer ' + localStorage.getItem('token') }
     });
@@ -122,9 +124,11 @@ const handleFlag = async (flaggedMsg) => {
     console.log('tryna flag', flaggedMsg)
   
    
-      const res_key = await getModeratorPublicKey(token)
-      console.log('res key is, ', res_key)
+      const { publicKey: res_key, modID: resolvedModID } = await getModeratorPublicKey(token)
 
+      console.log('res key is, ', res_key)
+    
+      console.log('HERE', resolvedModID)
       setModKey(res_key)
 
        const keyBuffer = base64ToArrayBuffer(res_key);
@@ -146,7 +150,7 @@ const handleFlag = async (flaggedMsg) => {
     const encryptedBase64 = btoa(String.fromCharCode(...new Uint8Array(encrypted)));
 
     // 6. Send `encryptedBase64` to your moderator endpoint…
-    const res = await sendToModerator({message: encryptedBase64, id: flaggedMsg.id, sender: flaggedMsg.sender});
+    const res = await sendToModerator({message: encryptedBase64, id: flaggedMsg.id, sender: flaggedMsg.sender, modID: resolvedModID});
     
      setMessages(prevMessages =>
       prevMessages.map(msg =>

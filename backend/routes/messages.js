@@ -63,7 +63,14 @@ router.get('/inbox/:recipientId', verifyToken, async (req, res) => {
 
 router.post('/flag/:id', verifyToken, async (req, res) => {
   await Message.findByIdAndUpdate(req.params.id, { flagged: true });
-  // await Log.create({ action: 'flag_message', role: req.user.role });
+  const logEntry = `[${new Date().toISOString()}] Message with the id ${req.params.id} got flagged by its recipient.\n`;
+  const logPath = path.join(__dirname, '..', 'audit_logs.txt');
+
+  fs.appendFile(logPath, logEntry, (err) => {
+    if (err) {
+      console.error('Failed to write to audit log:', err);
+    }
+  });
   res.json({ message: 'Message flagged' });
 });
 
@@ -71,7 +78,14 @@ router.post('/flag/:id', verifyToken, async (req, res) => {
 // (means reviewed=true in moderator's context)
 router.post('/change-review-status/:id', verifyToken, async (req, res) => {
   await Message.findByIdAndUpdate(req.params.id, { flagged: true });
-  console.log('updated');
+  const logEntry = `[${new Date().toISOString()}] The message ${req.params.id} has been reviewed by a moderator.\n`;
+  const logPath = path.join(__dirname, '..', 'audit_logs.txt');
+
+  fs.appendFile(logPath, logEntry, (err) => {
+    if (err) {
+      console.error('Failed to write to audit log:', err);
+    }
+  });
   res.json({ message: 'Message reviewed' });
 });
 
