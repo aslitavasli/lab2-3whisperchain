@@ -22,9 +22,9 @@ router.post('/send', verifyToken, async (req, res) => {
     return res.status(500).json({ message: 'An error occured. Please log out and try agaisn.' });
   }
   // // check if the user has exhausted their limit?
-  // if (sender.hasUsedMessage) {
-  //   return res.status(480).json({ message: 'You have reached your message limit. Send again after the session resets.' });
-  // }
+  if (sender.hasUsedMessage) {
+    return res.status(480).json({ message: 'You have reached your message limit. Send again after the session resets.' });
+  }
   // create a new message
   const message = new Message({ sender: sender._id, encryptedMessage });
   await message.save();
